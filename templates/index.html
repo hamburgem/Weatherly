@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Personal Assistant</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <!-- Setup Modal -->
+    <div class="modal fade" id="setupModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Welcome! 👋</h5>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted">Let me personalize your experience</p>
+
+                    <div class="mb-3">
+                        <label for="countrySelect" class="form-label">Select Your Country</label>
+                        <select class="form-select" id="countrySelect">
+                            <option value="">Detecting...</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="cityInput" class="form-label">Enter Your City</label>
+                        <input type="text" class="form-control" id="cityInput" placeholder="e.g., London">
+                    </div>
+
+                    <button class="btn btn-primary w-100" id="setupBtn">
+                        <i class="fas fa-check me-2"></i>Get Started
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container-fluid h-100 p-0">
+        <div class="row h-100 g-0">
+            <!-- Left Sidebar -->
+            <div class="col-md-3 sidebar-left">
+                <div class="sidebar-header">
+                    <h4><i class="fas fa-robot me-2"></i>AI Assistant</h4>
+                    <button class="btn-theme-toggle" id="themeToggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+
+                <!-- Large Time Display -->
+                <div class="time-card">
+                    <div class="time-glow"></div>
+                    <div class="location-badge">
+                        <i class="fas fa-map-marker-alt me-2"></i>
+                        <span id="locationText">Loading...</span>
+                    </div>
+                    <div class="large-time" id="largeTime">--:--</div>
+                    <div class="time-period" id="timePeriod">AM</div>
+                    <div class="full-date" id="fullDate">Loading...</div>
+                    <div class="timezone-info" id="timezoneInfo">GMT+0</div>
+                </div>
+
+                <!-- Weather Card -->
+                <div class="info-card weather-card">
+                    <div class="card-header-custom">
+                        <i class="fas fa-cloud-sun me-2"></i>
+                        <span>Weather</span>
+                    </div>
+                    <div class="weather-content">
+                        <div class="weather-main">
+                            <div class="weather-icon-large" id="weatherIcon">☀️</div>
+                            <div>
+                                <div class="temperature-large" id="temperature">--°</div>
+                                <div class="description" id="weatherDesc">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="weather-stats-grid">
+                        <div class="stat-box">
+                            <i class="fas fa-tint"></i>
+                            <div>
+                                <small>Humidity</small>
+                                <strong id="humidity">--%</strong>
+                            </div>
+                        </div>
+                        <div class="stat-box">
+                            <i class="fas fa-wind"></i>
+                            <div>
+                                <small>Wind</small>
+                                <strong id="wind">-- m/s</strong>
+                            </div>
+                        </div>
+                        <div class="stat-box">
+                            <i class="fas fa-temperature-high"></i>
+                            <div>
+                                <small>Feels Like</small>
+                                <strong id="feelsLike">--°</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Speed Card -->
+                <div class="info-card speed-card">
+                    <div class="card-header-custom">
+                        <i class="fas fa-tachometer-alt me-2"></i>
+                        <span>Internet Speed</span>
+                    </div>
+                    <div class="speed-display">
+                        <div class="speed-circle">
+                            <div class="speed-value" id="speedValue">--</div>
+                            <div class="speed-unit">Mbps</div>
+                        </div>
+                        <div class="speed-stats">
+                            <div class="speed-stat-item">
+                                <i class="fas fa-download"></i>
+                                <span id="downloadSpeed">-- Mbps</span>
+                            </div>
+                            <div class="speed-stat-item">
+                                <i class="fas fa-upload"></i>
+                                <span id="uploadSpeed">-- Mbps</span>
+                            </div>
+                            <div class="speed-stat-item">
+                                <i class="fas fa-clock"></i>
+                                <span id="pingSpeed">-- ms</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="speed-quality" id="speedQuality">Click to test</div>
+                    <button class="btn-custom w-100" id="testSpeedBtn">
+                        <i class="fas fa-redo me-2"></i>Test Speed
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Chat Area (Center) -->
+            <div class="col-md-6 chat-container-center">
+                <!-- Chat Header -->
+                <div class="chat-header-center">
+                    <div class="chat-title">
+                        <i class="fas fa-comments me-2"></i>
+                        <span>AI Chat</span>
+                    </div>
+                    <button class="btn-clear" id="clearChatBtn">
+                        <i class="fas fa-trash me-2"></i>Clear
+                    </button>
+                </div>
+
+                <!-- Chat Messages -->
+                <div class="chat-messages-center" id="chatMessages">
+                    <!-- Messages will be added here -->
+                </div>
+
+                <!-- Chat Input -->
+                <div class="chat-input-container-center">
+                    <div class="input-group-center">
+                        <button class="btn-voice" id="voiceBtn" title="Voice Input">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                        <input type="text" class="form-control-center" id="messageInput" placeholder="Type your message..." autocomplete="off">
+                        <button class="btn-send" id="sendBtn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                    <div class="suggestions-center" id="suggestions">
+                        <span class="suggestion-chip">Tell me a joke 😄</span>
+                        <span class="suggestion-chip">What's the weather? 🌤️</span>
+                        <span class="suggestion-chip">How was your day? 💭</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar -->
+            <div class="col-md-3 sidebar-right">
+                <div class="sidebar-header">
+                    <h4><i class="fab fa-spotify me-2"></i>Music</h4>
+                </div>
+
+                <!-- Spotify Player -->
+                <div class="spotify-container">
+                    <div class="spotify-player" id="spotifyPlayer">
+                        <div class="spotify-placeholder">
+                            <i class="fab fa-spotify spotify-icon"></i>
+                            <h5>Connect Spotify</h5>
+                            <p>Integrate with Spotify Web Playback SDK</p>
+                            <button class="btn-custom" id="connectSpotifyBtn">
+                                <i class="fab fa-spotify me-2"></i>Connect
+                            </button>
+                        </div>
+
+                        <!-- This will be populated by Spotify SDK -->
+                        <div class="spotify-content" id="spotifyContent" style="display: none;">
+                            <div class="spotify-artwork">
+                                <img id="spotifyArtwork" src="" alt="Album Art">
+                                <div class="spotify-playing-animation">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </div>
+                            </div>
+
+                            <div class="spotify-info">
+                                <div class="spotify-track" id="spotifyTrack">Track Name</div>
+                                <div class="spotify-artist" id="spotifyArtist">Artist Name</div>
+                            </div>
+
+                            <div class="spotify-progress">
+                                <span id="spotifyCurrentTime">0:00</span>
+                                <div class="spotify-progress-bar">
+                                    <div class="spotify-progress-fill" id="spotifyProgressFill"></div>
+                                </div>
+                                <span id="spotifyDuration">0:00</span>
+                            </div>
+
+                            <div class="spotify-controls">
+                                <button class="spotify-btn" id="spotifyPrev">
+                                    <i class="fas fa-step-backward"></i>
+                                </button>
+                                <button class="spotify-btn-main" id="spotifyPlayPause">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                                <button class="spotify-btn" id="spotifyNext">
+                                    <i class="fas fa-step-forward"></i>
+                                </button>
+                            </div>
+
+                            <div class="spotify-volume">
+                                <i class="fas fa-volume-down"></i>
+                                <input type="range" class="spotify-volume-slider" id="spotifyVolume" min="0" max="100" value="80">
+                                <i class="fas fa-volume-up"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Spotify Integration Instructions -->
+
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <div class="card-header-custom">
+                        <i class="fas fa-bolt me-2"></i>
+                        <span>Quick Actions</span>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="action-btn" onclick="document.getElementById('messageInput').value='Tell me a joke'; document.getElementById('sendBtn').click();">
+                            <i class="fas fa-laugh"></i>
+                            <span>Tell Joke</span>
+                        </button>
+                        <button class="action-btn" onclick="document.getElementById('messageInput').value='What is the weather?'; document.getElementById('sendBtn').click();">
+                            <i class="fas fa-cloud-sun"></i>
+                            <span>Weather</span>
+                        </button>
+                        <button class="action-btn" onclick="document.getElementById('testSpeedBtn').click();">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Speed Test</span>
+                        </button>
+                        <button class="action-btn" onclick="document.getElementById('messageInput').value='What time is it?'; document.getElementById('sendBtn').click();">
+                            <i class="fas fa-clock"></i>
+                            <span>Time</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://sdk.scdn.co/spotify-player.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+
+</html>
