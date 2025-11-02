@@ -1,3 +1,0 @@
-original_string = "C:\Users\bouih\Desktop\projekts\ai-assistant"
-modified_string = original_string.replace("\\", "/")
-print(modified_string)
