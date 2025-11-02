@@ -106,36 +106,30 @@
                     </div>
                 </div>
 
-                <!-- Speed Card -->
-                <div class="info-card speed-card">
+                <!-- Quick Actions -->
+                <div class="quick-actions">
                     <div class="card-header-custom">
-                        <i class="fas fa-tachometer-alt me-2"></i>
-                        <span>Internet Speed</span>
+                        <i class="fas fa-bolt me-2"></i>
+                        <span>Quick Actions</span>
                     </div>
-                    <div class="speed-display">
-                        <div class="speed-circle">
-                            <div class="speed-value" id="speedValue">--</div>
-                            <div class="speed-unit">Mbps</div>
-                        </div>
-                        <div class="speed-stats">
-                            <div class="speed-stat-item">
-                                <i class="fas fa-download"></i>
-                                <span id="downloadSpeed">-- Mbps</span>
-                            </div>
-                            <div class="speed-stat-item">
-                                <i class="fas fa-upload"></i>
-                                <span id="uploadSpeed">-- Mbps</span>
-                            </div>
-                            <div class="speed-stat-item">
-                                <i class="fas fa-clock"></i>
-                                <span id="pingSpeed">-- ms</span>
-                            </div>
-                        </div>
+                    <div class="action-buttons">
+                        <button class="action-btn" onclick="document.getElementById('messageInput').value='Tell me a joke'; document.getElementById('sendBtn').click();">
+                            <i class="fas fa-laugh"></i>
+                            <span>Tell Joke</span>
+                        </button>
+                        <button class="action-btn" onclick="document.getElementById('messageInput').value='What is the weather?'; document.getElementById('sendBtn').click();">
+                            <i class="fas fa-cloud-sun"></i>
+                            <span>Weather</span>
+                        </button>
+                        <button class="action-btn" onclick="document.getElementById('testSpeedBtn').click();">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Speed Test</span>
+                        </button>
+                        <button class="action-btn" onclick="document.getElementById('messageInput').value='What time is it?'; document.getElementById('sendBtn').click();">
+                            <i class="fas fa-clock"></i>
+                            <span>Time</span>
+                        </button>
                     </div>
-                    <div class="speed-quality" id="speedQuality">Click to test</div>
-                    <button class="btn-custom w-100" id="testSpeedBtn">
-                        <i class="fas fa-redo me-2"></i>Test Speed
-                    </button>
                 </div>
             </div>
 
@@ -184,90 +178,49 @@
 
                 <!-- Spotify Player -->
                 <div class="spotify-container">
-                    <div class="spotify-player" id="spotifyPlayer">
-                        <div class="spotify-placeholder">
-                            <i class="fab fa-spotify spotify-icon"></i>
-                            <h5>Connect Spotify</h5>
-                            <p>Integrate with Spotify Web Playback SDK</p>
-                            <button class="btn-custom" id="connectSpotifyBtn">
-                                <i class="fab fa-spotify me-2"></i>Connect
-                            </button>
-                        </div>
-
-                        <!-- This will be populated by Spotify SDK -->
-                        <div class="spotify-content" id="spotifyContent" style="display: none;">
-                            <div class="spotify-artwork">
-                                <img id="spotifyArtwork" src="" alt="Album Art">
-                                <div class="spotify-playing-animation">
-                                    <span></span>
-                                    <span></span>
-                                    <span></span>
-                                    <span></span>
-                                </div>
-                            </div>
-
-                            <div class="spotify-info">
-                                <div class="spotify-track" id="spotifyTrack">Track Name</div>
-                                <div class="spotify-artist" id="spotifyArtist">Artist Name</div>
-                            </div>
-
-                            <div class="spotify-progress">
-                                <span id="spotifyCurrentTime">0:00</span>
-                                <div class="spotify-progress-bar">
-                                    <div class="spotify-progress-fill" id="spotifyProgressFill"></div>
-                                </div>
-                                <span id="spotifyDuration">0:00</span>
-                            </div>
-
-                            <div class="spotify-controls">
-                                <button class="spotify-btn" id="spotifyPrev">
-                                    <i class="fas fa-step-backward"></i>
-                                </button>
-                                <button class="spotify-btn-main" id="spotifyPlayPause">
-                                    <i class="fas fa-play"></i>
-                                </button>
-                                <button class="spotify-btn" id="spotifyNext">
-                                    <i class="fas fa-step-forward"></i>
-                                </button>
-                            </div>
-
-                            <div class="spotify-volume">
-                                <i class="fas fa-volume-down"></i>
-                                <input type="range" class="spotify-volume-slider" id="spotifyVolume" min="0" max="100" value="80">
-                                <i class="fas fa-volume-up"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Spotify Integration Instructions -->
-
-                </div>
-
-                <!-- Quick Actions -->
-                <div class="quick-actions">
-                    <div class="card-header-custom">
-                        <i class="fas fa-bolt me-2"></i>
-                        <span>Quick Actions</span>
-                    </div>
-                    <div class="action-buttons">
-                        <button class="action-btn" onclick="document.getElementById('messageInput').value='Tell me a joke'; document.getElementById('sendBtn').click();">
-                            <i class="fas fa-laugh"></i>
-                            <span>Tell Joke</span>
-                        </button>
-                        <button class="action-btn" onclick="document.getElementById('messageInput').value='What is the weather?'; document.getElementById('sendBtn').click();">
-                            <i class="fas fa-cloud-sun"></i>
-                            <span>Weather</span>
-                        </button>
-                        <button class="action-btn" onclick="document.getElementById('testSpeedBtn').click();">
-                            <i class="fas fa-tachometer-alt"></i>
-                            <span>Speed Test</span>
-                        </button>
-                        <button class="action-btn" onclick="document.getElementById('messageInput').value='What time is it?'; document.getElementById('sendBtn').click();">
-                            <i class="fas fa-clock"></i>
-                            <span>Time</span>
-                        </button>
+                    <div class="spotify-embed-wrapper">
+                        <iframe src="https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator" width="100%" height="400" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
                     </div>
                 </div>
+
+                <!-- other sidebar content continues normally below -->
+                <div class="sidebar-section">
+
+
+                    <!-- Speed Card -->
+                    <div class="info-card speed-card">
+                        <div class="card-header-custom">
+                            <i class="fas fa-tachometer-alt me-2"></i>
+                            <span>Internet Speed</span>
+                        </div>
+                        <div class="speed-display">
+                            <div class="speed-circle">
+                                <div class="speed-value" id="speedValue">--</div>
+                                <div class="speed-unit">Mbps</div>
+                            </div>
+                            <div class="speed-stats">
+                                <div class="speed-stat-item">
+                                    <i class="fas fa-download"></i>
+                                    <span id="downloadSpeed">-- Mbps</span>
+                                </div>
+                                <div class="speed-stat-item">
+                                    <i class="fas fa-upload"></i>
+                                    <span id="uploadSpeed">-- Mbps</span>
+                                </div>
+                                <div class="speed-stat-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span id="pingSpeed">-- ms</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="speed-quality" id="speedQuality">Click to test</div>
+                        <button class="btn-custom w-100" id="testSpeedBtn">
+                        <i class="fas fa-redo me-2"></i>Test Speed
+                    </button>
+                    </div>
+                </div>
+
+
             </div>
         </div>
     </div>

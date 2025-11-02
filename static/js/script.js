@@ -13,9 +13,10 @@ let spotifyAccessToken = null;
 
 // Countries list
 const countries = {
+    'Morocco': 'MA',
+    'Germany': 'DE',
     'United States': 'US',
     'United Kingdom': 'GB',
-    'Germany': 'DE',
     'France': 'FR',
     'Spain': 'ES',
     'Italy': 'IT',
@@ -26,13 +27,10 @@ const countries = {
     'India': 'IN',
     'China': 'CN',
     'Russia': 'RU',
-    'Mexico': 'MX',
     'Netherlands': 'NL',
     'Sweden': 'SE',
     'Norway': 'NO',
-    'Denmark': 'DK',
-    'Poland': 'PL',
-    'Morocco': 'MA'
+    'Denmark': 'DK'
 };
 
 // DOM Elements

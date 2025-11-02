@@ -3,10 +3,12 @@ from flask_cors import CORS
 import os
 import requests
 from datetime import datetime
-import json
 import secrets
 import random
 from openai import OpenAI
+import threading
+import speedtest
+
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -69,54 +71,6 @@ def get_user_location_by_ip():
         print(f"Location API error: {e}")
     return None
 
-def get_radio_stations(country):
-    """Fetch radio stations from Radio Browser API"""
-    try:
-        # Use country code mapping
-        country_codes = {
-            'United States': 'US', 'United Kingdom': 'GB', 'Germany': 'DE',
-            'France': 'FR', 'Spain': 'ES', 'Italy': 'IT', 'Canada': 'CA',
-            'Australia': 'AU', 'Japan': 'JP', 'Brazil': 'BR', 'India': 'IN',
-            'China': 'CN', 'Russia': 'RU', 'Mexico': 'MX', 'Netherlands': 'NL',
-            'Sweden': 'SE', 'Norway': 'NO', 'Denmark': 'DK', 'Poland': 'PL',
-            'Morocco': 'MA'
-        }
-        
-        country_code = country_codes.get(country, country)
-        
-        # Try multiple Radio Browser API servers for redundancy
-        servers = [
-            'de1.api.radio-browser.info',
-            'nl1.api.radio-browser.info',
-            'at1.api.radio-browser.info'
-        ]
-        
-        for server in servers:
-            try:
-                url = f"https://{server}/json/stations/bycountry/{country_code}?limit=50&order=votes&reverse=true"
-                response = requests.get(url, timeout=10, headers={'User-Agent': 'AI-Assistant/1.0'})
-                if response.status_code == 200:
-                    stations = response.json()
-                    # Return top stations with better formatting
-                    result = []
-                    for s in stations[:30]:
-                        if s.get('url_resolved') or s.get('url'):
-                            result.append({
-                                'name': s.get('name', 'Unknown'),
-                                'url': s.get('url_resolved', s.get('url', '')),
-                                'favicon': s.get('favicon', ''),
-                                'country': s.get('country', country),
-                                'tags': s.get('tags', 'General')
-                            })
-                    return result
-            except Exception as e:
-                print(f"Server {server} error: {e}")
-                continue
-                
-    except Exception as e:
-        print(f"Radio API error: {e}")
-    return []
-
 def get_greeting(hour):
     """Generate greeting based on time"""
     if 5 <= hour < 12:
@@ -141,7 +95,7 @@ def analyze_intent(message):
         return 'time'
     elif any(word in message_lower for word in ['joke', 'fun', 'funny', 'laugh']):
         return 'joke'
-    elif any(word in message_lower for word in ['music', 'song', 'radio', 'play']):
+    elif any(word in message_lower for word in ['music', 'song', 'spotify', 'play']):
         return 'music'
     elif any(word in message_lower for word in ['speed', 'internet', 'connection']):
         return 'speed'
@@ -172,7 +126,7 @@ def get_ai_response(message, context):
         ]
         return random.choice(jokes)
     elif intent == 'music':
-        return "I can play local radio stations for you! Check the music player on the right side. 🎵"
+        return "I can play Spotify songs for you! Check the music player on the right side. 🎵"
 
     # --- Use OpenAI for normal chat ---
     try:
@@ -184,7 +138,8 @@ def get_ai_response(message, context):
         system_prompt = (
             f"You are a friendly and concise AI assistant. "
             f"The user is in {city}. Current weather: {weather_desc}, {temp}°C. "
-            f"Keep responses under 100 words."
+            f"Provide helpful and relevant responses. (you can use the city/weather info if needed) "
+            f"Keep responses under 300 words."
         )
         client =  OpenAI(api_key=OPENAI_API_KEY)
         completion = client.chat.completions.create(
@@ -279,16 +234,12 @@ def init_user():
         hour = now.hour
         greeting_text, greeting_emoji = get_greeting(hour)
         
-        # Get radio stations
-        radio_stations = get_radio_stations(country)
-        
         return jsonify({
             'success': True,
             'city': city,
             'country': country,
             'weather': weather,
             'greeting': f"{greeting_text}, {city}! {greeting_emoji}",
-            'radio_stations': radio_stations,
             'hour': hour
         })
     except Exception as e:
@@ -341,25 +292,36 @@ def weather(city):
     weather_data = get_weather(city)
     return jsonify(weather_data or {'error': 'Could not fetch weather'})
 
+
+def run_speed_test(result_container):
+    try:
+        st = speedtest.Speedtest()
+        st.get_best_server()
+        download_speed = st.download() / 1_000_000
+        upload_speed = st.upload() / 1_000_000
+        result_container['data'] = {
+            'download_speed': round(download_speed, 2),
+            'upload_speed': round(upload_speed, 2),
+            'unit': 'Mbps'
+        }
+    except Exception as e:
+        result_container['error'] = str(e)
+
 @app.route('/api/speed-test', methods=['GET'])
 def speed_test():
-    """Simulate internet speed test"""
-    # In production, use speedtest-cli library
-    # For now, return mock data
-    
-    speed = round(random.uniform(1.0, 100.0), 1)
-    
-    return jsonify({
-        'download_speed': speed,
-        'unit': 'Mbps',
-        'quality': 'Good' if speed > 10 else 'Fair' if speed > 5 else 'Slow'
-    })
+    result = {}
+    thread = threading.Thread(target=run_speed_test, args=(result,))
+    thread.start()
+    thread.join(timeout=20)
 
-@app.route('/api/radio/<country>', methods=['GET'])
-def radio(country):
-    """Get radio stations for a country"""
-    stations = get_radio_stations(country)
-    return jsonify(stations)
+    if 'data' in result:
+        return jsonify(result['data'])
+    elif 'error' in result:
+        return jsonify({'error': result['error']}), 500
+    else:
+        return jsonify({'message': 'Speed test taking too long, please try again'}), 202
+
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
